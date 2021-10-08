@@ -6,7 +6,7 @@
 /*   By: cblanca <cblanca@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/06 12:04:55 by cblanca           #+#    #+#             */
-/*   Updated: 2021/10/07 15:58:36 by cblanca          ###   ########.fr       */
+/*   Updated: 2021/10/08 10:31:16 by cblanca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,25 +22,23 @@ int	ft_isspace(int c)
 
 int	ft_atoi(const char *str)
 {
-	long long	i;
-	long long	nbr;
-	long long	isneg;
+	int	result;
+	int	negative;
 
-	i = 0;
-	nbr = 0;
-	isneg = 0;
-	while (ft_isspace(str[i]))
-		i++;
-	if (str[i] != '\0' && str[i] == '-')
+	negative = 1;
+	result = 0;
+	while (ft_isspace(*str))
+		str++;
+	if (*str == '-' || *str == '+')
 	{
-		isneg = 1;
-		i++;
+		if (*str == '-')
+			negative *= -1;
+		str++;
 	}
-	else if (str[i] == '+')
-		i++;
-	while (str[i] != '\0' && ft_isdigit(str[i]))
-		nbr = (nbr * 10) + (str[i++] - '0');
-	if (isneg == 1)
-		return (-nbr);
-	return (nbr);
+	while (*str >= '0' && *str <= '9')
+	{
+		result = result * 10 + (*str - '0');
+		str++;
+	}
+	return (result * negative);
 }
