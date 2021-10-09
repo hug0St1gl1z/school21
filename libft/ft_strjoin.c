@@ -6,7 +6,7 @@
 /*   By: cblanca <cblanca@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/08 09:58:52 by cblanca           #+#    #+#             */
-/*   Updated: 2021/10/08 10:59:42 by cblanca          ###   ########.fr       */
+/*   Updated: 2021/10/09 18:25:46 by cblanca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	char	*rtn;
 
 	if (!s1 && !s2)
-		return (ft_strdup(""));
+		return (NULL);
 	if (s1 && !s2)
 		return (ft_strdup(s1));
 	if (!s1 && s2)

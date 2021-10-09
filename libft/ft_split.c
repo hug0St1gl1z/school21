@@ -6,7 +6,7 @@
 /*   By: cblanca <cblanca@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/08 12:28:23 by cblanca           #+#    #+#             */
-/*   Updated: 2021/10/09 12:19:28 by cblanca          ###   ########.fr       */
+/*   Updated: 2021/10/09 16:09:05 by cblanca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static char	**ft_mal(char **strs, char const *s, char c)
 			i++;
 		}
 		if (s[h + 1] == '\0' && s[h] != c)
-			if (!(strs[i] = malloc(sizeof( size_t) * count + 1)))
+			if (!(strs[i] = malloc(sizeof( char) * count + 1)))
 				return (NULL);
 		h++;
 	}

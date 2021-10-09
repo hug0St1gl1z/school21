@@ -29,7 +29,8 @@ SRCS = 	ft_memset.c			\
 		ft_substr.c			\
 		ft_strjoin.c		\
 		ft_strtrim.c		\
-		ft_strmapi.c		
+		ft_strmapi.c		\
+		ft_itoa.c			\
 
 SRCSB =	ft_lstsize.c		\
 		ft_lstdelone.c		\
