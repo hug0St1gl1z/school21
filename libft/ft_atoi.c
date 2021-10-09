@@ -6,39 +6,43 @@
 /*   By: cblanca <cblanca@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/06 12:04:55 by cblanca           #+#    #+#             */
-/*   Updated: 2021/10/08 10:31:16 by cblanca          ###   ########.fr       */
+/*   Updated: 2021/10/09 14:10:06 by cblanca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <stdlib.h>
-#include <unistd.h>
 
 int	ft_isspace(int c)
 {
-	return (c == '\f' || c == '\n' || c == '\r' \
-	|| c == '\t' || c == '\v' || c == ' ');
+	return (c == '\f' || c == '\n' || c == '\r'
+		|| c == '\t' || c == '\v' || c == ' ');
 }
 
 int	ft_atoi(const char *str)
 {
 	int	result;
 	int	negative;
+	int	i;
 
 	negative = 1;
 	result = 0;
-	while (ft_isspace(*str))
-		str++;
-	if (*str == '-' || *str == '+')
+	i = 0;
+	while (ft_isspace(str[i]))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
 	{
-		if (*str == '-')
+		if (str[i] == '-')
 			negative *= -1;
-		str++;
+		i++;
 	}
-	while (*str >= '0' && *str <= '9')
+	while (str[i] >= '0' && str[i] <= '9')
 	{
-		result = result * 10 + (*str - '0');
-		str++;
+		if (ft_strlen(&str[i]) > 19 && negative != -1)
+			return (-1);
+		if (i > 19)
+			return (0);
+		result = result * 10 + (str[i] - '0');
+		i++;
 	}
 	return (result * negative);
 }

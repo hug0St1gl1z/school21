@@ -6,85 +6,114 @@
 /*   By: cblanca <cblanca@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/08 12:28:23 by cblanca           #+#    #+#             */
-/*   Updated: 2021/10/08 14:45:18 by cblanca          ###   ########.fr       */
+/*   Updated: 2021/10/09 12:19:28 by cblanca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static size_t ft_substr_nbr(char const *s, char c)
+static int	ft_hm(char const *s, char c)
 {
-	size_t	i;
-	size_t	substr_len;
-	size_t	counter;
+	size_t	nbr;
+	int		i;
 
-	substr_len = 0;
-	counter = 0;
+	nbr = 0;
 	i = 0;
 	while (s[i])
 	{
-		if (s[i] == c && substr_len != 0)
-		{
-			++counter;
-			substr_len = 0;
-		}
-		else if (s[i] != c)
-		{
-			++substr_len;
-		}
-		++i;
+		while (s[i] == c)
+			i++;
+		if (i > 0 && s[i] && s[i - 1] == c)
+			nbr++;
+		if (s[i])
+			i++;
 	}
-	if (substr_len != 0)
-		++counter;
-	return (counter);
+	if (nbr == 0 && s[i - 1] == c)
+		return (0);
+	if (s[0] != c)
+		nbr++;
+	return (nbr);
 }
 
-static char	**ft_free_all(char **result, size_t n)
+static char	**ft_mal(char **strs, char const *s, char c)
 {
-	++n;
-	while (n > 0)
+	size_t	count;
+	int		i;
+	int		h;
+
+	count = 0;
+	i = 0;
+	h = 0;
+	while (s[h])
 	{
-		--n;
+		if (s[h] != c)
+			count++;
+		else if (h > 0 && s[h - 1] != c)
+		{
+			strs[i] = malloc(sizeof(char) * (count + 1));
+			if (!strs[i])
+				return (0);
+			count = 0;
+			i++;
+		}
+		if (s[h + 1] == '\0' && s[h] != c)
+			if (!(strs[i] = malloc(sizeof( size_t) * count + 1)))
+				return (NULL);
+		h++;
 	}
+	return (strs);
 }
 
-static char	**ft_arr_alloc(s, c)
+static char	**ft_cpy(char **strs, char const *s, char c)
 {
-	size_t	substr_nbr;
-	char	result;
+	int	i;
+	int	j;
+	int	h;
 
-	substr_nbr = ft_substr_nbr(s, c);
-	result = (char **)malloc(sizeof(char *) * (substr_nbr +1));
-	if (result == NULL)
-		return (NULL);
-	result[substr_nbr] = (void*)0;
-	return (result);
+	i = 0;
+	j = 0;
+	h = 0;
+	while (s[h])
+	{
+		if (s[h] != c)
+			strs[i][j++] = s[h];
+		else if (h > 0 && s[h - 1] != c)
+			if (h != 0)
+			{
+				strs[i][j] = '\0';
+				j = 0;
+				i++;
+			}
+		if (s[h + 1] == '\0' && s[h] != c)
+			strs[i][j] = '\0';
+		h++;
+	}
+	return (strs);
 }
 
 char	**ft_split(char const *s, char c)
 {
-	size_t	i;
-	size_t	len;
-	size_t	str_counter;
-	char	**result;
+	char	**rtn;
+	int		nbr_w;
 
-	i = 0;
-	len = 0;
-	str_counter = 0;
-	if (!s || (result = ft_arr_alloc(s, c )) == NULL)
-		return (NULL);
-	while (s[i])
+	if (!s || !*s)
 	{
-		if ((s[i] == c && len != 0) || (s[i] != c && ++len && s[i + 1] == 0))
-		{
-			result[str_counter] = (char *)malloc(sizeof(char) * (len + 1));
-			if (result[str_counter] == NULL)
-				return (ft_free_all(result, str_counter));
-			len = 0;
-			++str_counter;
-		}
-		++i;
+		if (!(rtn = malloc(sizeof(char *) * 1)))
+			return (NULL);
+		*rtn = (void *)0;
+		return (rtn);
 	}
-	ft_stirg_writer(s, result, c);
-	return (result);
+	nbr_w = ft_hm(s, c);
+	rtn = malloc(sizeof(char *) * (nbr_w + 1));
+	if (!rtn)
+		return (0);
+	if (ft_mal(rtn, s, c) != 0)
+		ft_cpy(rtn, s, c);
+	else
+	{
+		free(rtn);
+		return (NULL);
+	}
+	rtn[nbr_w] = (void *)0;
+	return (rtn);
 }
