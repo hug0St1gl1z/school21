@@ -31,6 +31,7 @@ SRCS = 	ft_memset.c			\
 		ft_strtrim.c		\
 		ft_strmapi.c		\
 		ft_itoa.c			\
+		ft_striteri.c		\
 
 SRCSB =	ft_lstsize.c		\
 		ft_lstdelone.c		\
@@ -47,9 +48,8 @@ NAME = libft.a
 
 OBJS_DIR = objs/
 OBJS = $(SRCS:.c=.o)
-OBJECTS_PREFIXED = $(addprefix $(OBJS_DIR), $(OBJS))
-
 OBJSB = $(SRCSB:.c=.o)
+OBJECTS_PREFIXED = $(addprefix $(OBJS_DIR), $(OBJS))
 OBJECTS_BONUS_PREFIXED = $(addprefix $(OBJS_DIR), $(OBJSB))
 
 CC = gcc
@@ -73,7 +73,7 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-re: fclean all
+re: fclean all bonus
 
 bonus: $(OBJECTS_BONUS_PREFIXED)
 	@ar r $(NAME) $(OBJECTS_BONUS_PREFIXED)
