@@ -5,126 +5,121 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cblanca <cblanca@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/18 11:31:14 by cblanca           #+#    #+#             */
-/*   Updated: 2021/10/20 10:36:41 by cblanca          ###   ########.fr       */
+/*   Created: 2021/11/22 09:57:28 by cblanca           #+#    #+#             */
+/*   Updated: 2021/11/27 15:14:27 by cblanca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include "libft.h"
+#include "get_next_line.h"
 
-char	*ft_strnew(size_t size)
+/* */
+
+char	*get_line(int fd, char *line)
 {
-	char	*str;
+	char	*buf;
+	int		flag;
 
-	if (size == 0)
-	{
-		str = (char *)malloc(sizeof(*str) * (1));
-		if (str)
-		{
-			memset(str, '\0', (1));
-			return (str);
-		}
-	}
-	else if (size)
-	{
-		str = (char *)malloc(sizeof(*str) * (size + 1));
-		if (str)
-		{
-			memset(str, '\0', (size + 1));
-			return (str);
-		}
-	}
-	return (NULL);
-}
-
-char	chek_remainder(char *remainder, char **line)
-{
-	char	*p_n;
-
-	p_n = 0;
-	if (remainder)
-	{
-		if ((strchr(remainder, '\n')))
-		{
-			*p_n = '\0';
-			*line = strdup(remainder);
-			strcpy(remainder, ++p_n);
-		}
-		else
-		{
-			*line = strdup(remainder);
-			bzero(remainder, strlen(remainder));
-		}
-	}
-	else
-	{
-		*line = ft_strnew(1);
-	}
-	return (*p_n);
-}
-
-char	*ft_strjjoin(char const *s1, char const *s2)
-{
-	size_t	s1_len;
-	size_t	s2_len;
-	size_t	s1s2_len;
-	char	*rtn;
-
-	if (!s1 && !s2)
+	buf = malloc(BUFFER_SIZE + 1);
+	if (!buf)
 		return (NULL);
-	if (s1 && !s2)
-		return (strdup(s1));
-	if (!s1 && s2)
-		return (strdup(s2));
-	s1_len = strlen(s1);
-	s2_len = strlen(s2);
-	s1s2_len = s1_len + s2_len + 1;
-	rtn = malloc(sizeof(char) * s1s2_len);
-	if (!rtn)
-		return (0);
-	memmove(rtn, s1, s1_len);
-	memmove(rtn + s1_len, s2, s2_len);
-	rtn[s1s2_len - 1] = '\0';
-	return (rtn);
-}
-
-int	get_next_line(int fd, char **line)
-{
-	char		c[10 + 1];
-	int			byte_read;
-	char		*p_n;
-	static char	*remainder;
-
-	*p_n = chek_remainder(remainder, line);
-	while (!p_n && (byte_read = read(fd, c, 10)))
+	flag = -1;
+	while (!pointer_to_end_line(line) && flag)
 	{
-		c[byte_read] = '\0';
-		if ((p_n = strchr(c, '\n')))
+		flag = read(fd, buf, BUFFER_SIZE);
+		if (flag == -1)
 		{
-			*p_n = '\0';
-			p_n++;
-			remainder = strdup(p_n);
+			free(buf);
+			return (NULL);
 		}
-		*line = ft_strjjoin(*line, c);
+		buf[flag] = '\0';
+		line = ft_strjoin(line, buf);
 	}
-	return (0);
+	free(buf);
+	return (line);
 }
 
-int	main(void)
-{
-	int		fd;
-	char	*line;
+/* */
 
-	fd = open("text.txt", O_RDONLY);
-	get_next_line(fd, &line);
-	printf("%s\n\n", line);
-	get_next_line(fd, &line);
-	printf("%s\n\n", line);
-	get_next_line(fd, &line);
-	printf("%s\n\n", line);
+char	*line_after_n(char *line)
+{
+	char	*remainder;
+	int		counter;
+	int		counter2;
+
+	counter = 0;
+	if (!line)
+		return (NULL);
+	while (line[counter] != '\n' && line[counter])
+		counter++;
+	if (!line[counter])
+	{
+		free(line);
+		return (NULL);
+	}
+	remainder = malloc(ft_strlen(&line[counter]) + 1);
+	if (!remainder)
+		return (NULL);
+	counter++;
+	counter2 = 0;
+	while (line[counter])
+		remainder[counter2++] = line[counter++];
+	remainder[counter2] = '\0';
+	free(line);
+	return (remainder);
+}
+
+/* */
+
+char	*line_before_n(char *line)
+{
+	int		counter;
+	char	*remainder;
+
+	counter = 0;
+	if (!line)
+		return (NULL);
+	while (line[counter] != '\n' && line[counter])
+		counter++;
+	if (line[counter] == '\n')
+		counter++;
+	remainder = malloc(counter + 1);
+	if (!remainder)
+		return (NULL);
+	counter = 0;
+	while (line[counter] != '\0' && line[counter] != '\n')
+	{
+		remainder[counter] = line[counter];
+		counter++;
+	}
+	if (line[counter] == '\n')
+		remainder[counter++] = '\n';
+	remainder[counter] = '\0';
+	return (remainder);
+}
+
+/* */
+
+char	*get_next_line(int fd)
+{
+	char		*remain;
+	static char	*line;
+
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, NULL, 0))
+		return (NULL);
+	line = get_line(fd, line);
+	if (!line)
+		return (NULL);
+	remain = line_before_n(line);
+	if (!remain || !*remain)
+	{
+		free(remain);
+		if (line)
+		{
+			free(line);
+			line = NULL;
+		}
+		return (NULL);
+	}
+	line = line_after_n(line);
+	return (remain);
 }
